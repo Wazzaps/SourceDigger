@@ -1,10 +1,9 @@
 use std::collections::HashSet;
 use std::ffi::{OsStr, OsString};
-use std::io::{Write, BufWriter, Read, BufReader};
+use std::io::{BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::Mutex;
-use std::time::{Instant, Duration};
+use std::time::Instant;
 use std::os::unix::ffi::OsStrExt;
 
 use git2::{Commit, ObjectType, Oid, Repository, TreeWalkMode, TreeWalkResult};
@@ -14,7 +13,6 @@ use subprocess;
 use subprocess::ExitStatus;
 use ctags::{Ctags, TagType};
 use std::fs::File;
-use std::thread::sleep;
 
 fn collect_tags(repo: &Repository, pattern: Option<Regex>) -> Vec<String> {
     let tags = repo.tag_names(None).unwrap();
@@ -78,7 +76,7 @@ fn get_objects_in_tags(repo: &Repository, tags: &Vec<String>, file_pattern: Opti
     objects
 }
 
-fn write_objects(project_name: &OsStr, repo: &Mutex<Repository>, objects: &HashSet<Oid>) {
+fn write_objects(project_name: &OsStr, repo: &Repository, objects: &HashSet<Oid>) {
     let start = Instant::now();
     println!("[progress_title] Writing objects");
 
@@ -102,7 +100,6 @@ fn write_objects(project_name: &OsStr, repo: &Mutex<Repository>, objects: &HashS
             }
 
             let mut file = std::fs::File::create(obj_path).unwrap();
-            let repo = repo.lock().unwrap();
             let obj = repo.find_object(*obj, Some(ObjectType::Blob)).unwrap();
             let blob = obj.into_blob().unwrap();
             file.write_all(blob.content()).unwrap();
@@ -112,38 +109,12 @@ fn write_objects(project_name: &OsStr, repo: &Mutex<Repository>, objects: &HashS
     println!("[progress:100%] Wrote {} objects in {} ms", counter.into_inner(), start.elapsed().as_millis());
 }
 
-// fn parse_objects(repo: &Mutex<Repository>, objects: HashSet<Oid>) {
-//     let start = Instant::now();
-//     println!("[progress_title] Parsing objects");
-//
-//     let objects_len = objects.len();
-//     let counter = AtomicUsize::new(0);
-//     objects.into_par_iter().for_each(|obj| {
-//         let i = counter.fetch_add(1, Ordering::SeqCst);
-//         println!("[progress:{:.2}%] Scanning object: {}", (i as f64) / (objects_len as f64) * 100., hex::encode(&obj.as_bytes()));
-//         let content = {
-//             let repo = repo.lock().unwrap();
-//             let obj = repo.find_object(obj, Some(ObjectType::Blob)).unwrap();
-//             let blob = obj.into_blob().unwrap();
-//             blob.content().to_owned()
-//         };
-//
-//         let tags = subprocess::Exec::cmd("/usr/bin/sha256sum")
-//             .stdin(content)
-//             .stdout(subprocess::Redirection::Pipe)
-//             .capture().unwrap()
-//             .stdout_str();
-//     });
-//
-//     println!("[progress:100%] Parsed {} objects in {} ms", objects_len, start.elapsed().as_millis());
-// }
-
 fn parse_objects(project_name: &OsStr, objects: &HashSet<Oid>) -> PathBuf {
     let start = Instant::now();
     println!("[progress_title] Processing objects");
     let output_file = Path::new("signup-db").join(project_name).join("ctags");
 
-    println!("[progress_estimate] {}ms", objects.len() * 75 / 100);
+    println!("[progress_estimate] {}ms", objects.len());
     // Flags
     let args: Vec<OsString> = vec![
         "--tag-relative".into(),
@@ -192,26 +163,18 @@ fn parse_objects(project_name: &OsStr, objects: &HashSet<Oid>) -> PathBuf {
 }
 
 fn main() {
-    let project_name = OsString::from("linux");
-    let repo_name = OsString::from("linux.git");
+    let project_name = OsString::from("vim");
+    let repo_name = OsString::from("vim.git");
     let tag_pattern = Regex::new(r"(v\d+)\.?\d\d*\.?\d*").unwrap();
     // let tag_pattern = Regex::new(r"(v\d+\.?\d)\d*\.?\d*").unwrap();
     // let tag_pattern = Regex::new(r"(v\d+\.?\d\d*\.?\d*)").unwrap();
     let file_pattern = Regex::new(r"^.*\.[ch]$").unwrap();
 
-    let repo = Mutex::new(Repository::open(
-        Path::new("sources").join(repo_name)
-    ).unwrap());
-
+    let repo = Repository::open(Path::new("sources").join(repo_name)).unwrap();
 
     // Generate ctags file for all file versions in repo
-    let tags;
-    let objects;
-    {
-        let repo_lock = &repo.lock().unwrap();
-        tags = collect_tags(repo_lock, Some(tag_pattern));
-        objects = get_objects_in_tags(repo_lock, &tags, Some(file_pattern));
-    }
+    let tags = collect_tags(&repo, Some(tag_pattern));
+    let objects = get_objects_in_tags(&repo, &tags, Some(file_pattern));
     write_objects(&project_name, &repo, &objects);
     let ctags_file = parse_objects(&project_name, &objects);
 
