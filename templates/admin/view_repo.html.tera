@@ -1,0 +1,65 @@
+{% extends "base" %}
+
+{% block title %}- {{repo.name}}{% endblock title %}
+{% block logotitle %}&middot; {{repo.name}}{% endblock logotitle %}
+
+{% block content %}
+    <div class="card-container">
+        <div class="card-helper">
+            <div class="card">
+                <h2>Repository</h2>
+                <div class="form-grid">
+                    <label>Origin:</label>
+                    <span>{{repo.origin}}</span>
+                </div>
+                <div class="spacer"></div>
+                <div class="card-actions">
+                    <a class="card-action" href="/repo/git?action=repo-update">Update</a>
+                    <a class="card-action danger" href="/repo/git?action=repo-reclone">Re-Clone</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-helper">
+            <div class="card">
+                <h2>Index</h2>
+                <div class="form-grid">
+                    <label>Initial Version:</label>
+                    <span>{{index.initial_ver}}</span>
+                    <label>Latest Version:</label>
+                    <span>{{index.latest_ver}}</span>
+                </div>
+                <div class="spacer"></div>
+                <div class="card-actions">
+                    <a class="card-action" href="/repo/git?action=index-update">Update</a>
+                    <a class="card-action danger" href="/repo/git?action=index-reindex">Re-Index</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-helper">
+            <div class="card">
+                <h2>Danger Zone</h2>
+                <div class="spacer"></div>
+                <div class="card-actions">
+                    <a class="card-action danger" href="/repo/git?action=delete">Delete</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-helper">
+            <div class="card">
+                <h2>Statistics</h2>
+                <div class="form-grid">
+                    <label>Searches:</label>
+                    <span>{{stats.searches}}</span>
+                    <label>Autocompletes:</label>
+                    <span>{{stats.autocompletes}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--    <form class="reverse">-->
+<!--        <div id="progress">-->
+<!--            <div id="progress_inner" style="width: 20%;"></div>-->
+<!--        </div>-->
+<!--        <label>20%</label>-->
+<!--    </form>-->
+{% endblock content %}

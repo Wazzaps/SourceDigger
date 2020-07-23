@@ -1,0 +1,7 @@
+[package]
+name = "ctags"
+version = "0.1.0"
+authors = ["David Shlemayev <davidshlemayev@gmail.com>"]
+edition = "2018"
+
+[dependencies]

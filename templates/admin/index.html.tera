@@ -1,0 +1,18 @@
+{% extends "base" %}
+
+{% block title %}- Admin{% endblock title %}
+{% block logotitle %}{% endblock logotitle %}
+
+{% block content %}
+    <h1>Repos</h1>
+    <ul>
+        <li>
+            <a href="/repo/linux">linux</a>
+        </li>
+        <li>
+            <a href="/repo/git">git</a>
+        </li>
+    </ul>
+    <br>
+    <a href="/add_repo">[Add repo]</a>
+{% endblock content %}

@@ -1,0 +1,3 @@
+Hello	example.c	/^int Hello() {$/;"	f
+World	example.c	/^int World() {$/;"	f
+FOOBAR	example.c	1;"	d	file:

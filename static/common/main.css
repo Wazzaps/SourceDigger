@@ -1,0 +1,209 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@300;400;700&display=swap');
+
+:root {
+    --top-text-color: #eee;
+    --top-bg-color1: #22222a;
+    --top-bg-color2: #1f1f27;
+    /*--top-shadow-color: #1a1a23;*/
+    --top-shadow-color: #242430;
+    --top-sliver-color: #474758;
+    --text-color: #eee;
+    --link-color: #aff;
+    --link-innerglow-color: #212f34;
+    --link-glow-color: #2c4444;
+    --danger-link-color: #faa;
+    --danger-link-innerglow-color: #362728;
+    --danger-link-glow-color: #452d2d;
+    --bg-color: #334;
+    --inp-border-color: #aaa;
+    --inp-border-color-focus: #eee;
+    --inp-border-glow-focus: rgba(200, 200, 255, 0.3);
+    --progress-bg-color: #464659;
+    --progress-inner-bg-color: #9898b1;
+    --progress-border-color: #9898b1;
+}
+
+body {
+    margin: 0;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Ubuntu Mono', sans-serif;
+    min-height: 100vh;
+}
+
+#top-bar {
+    background: linear-gradient(var(--top-bg-color1), var(--top-bg-color2));
+    color: var(--top-text-color);
+    padding: 0.6rem;
+    box-shadow: var(--top-shadow-color) 0 4px 12px;
+}
+
+#logo {
+    font-size: 1.6rem;
+    padding-left: 0.5rem;
+}
+
+#main-content {
+    max-width: 80rem;
+    margin: auto;
+    padding: 2rem;
+}
+
+a {
+    color: var(--link-color);
+}
+
+a.danger {
+    color: var(--danger-link-color);
+}
+
+#top-bar a {
+    color: var(--top-text-color);
+    text-decoration: none;
+}
+
+#top-bar a:hover {
+    text-shadow: var(--top-text-color) 0 0 4px;
+}
+
+input {
+    font-family: 'Ubuntu Mono', sans-serif;
+}
+
+input[type="text"] {
+    background: var(--bg-color);
+    border: 1px solid var(--inp-border-color);
+    border-radius: 0.2rem;
+    padding: 0.4rem;
+    font-size: 1.4rem;
+    color: var(--text-color);
+}
+
+input[type="text"]:focus {
+    border: 1px solid var(--inp-border-color-focus);
+    box-shadow: var(--inp-border-glow-focus) 0 0 0 5px;
+}
+
+form label {
+    font-size: 1.4rem;
+}
+
+input[type="submit"] {
+    background: var(--text-color);
+    border-radius: 0.6rem;
+    padding: 0.6rem 3rem;
+    font-size: 1.5rem;
+    color: var(--bg-color);
+    float: right;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: max-content auto;
+    align-items: center;
+    grid-gap: 1rem;
+    width: 100%;
+}
+
+.form-grid.reverse {
+    grid-template-columns: auto max-content;
+}
+
+.form-grid span {
+    overflow-wrap: anywhere;
+}
+
+.form-grid.center {
+    width: unset;
+    margin: auto;
+}
+
+#progress {
+    background: var(--progress-bg-color);
+    height: 2.5rem;
+    border: 1px dashed var(--progress-border-color);
+    border-radius: 0.4rem;
+}
+
+#progress_inner {
+    background: var(--progress-inner-bg-color);
+    height: 100%;
+}
+
+.card-container {
+    column-count: 3;
+}
+
+@media only screen and (max-width: 1200px) {
+    .card-container {
+        column-count: 2;
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    .card-container {
+        column-count: 1;
+    }
+}
+
+.card-helper {
+    display: inline-block;
+    width: 100%;
+}
+
+@supports (break-inside: avoid-column) {
+    .card-helper {
+        display: block;
+        break-inside: avoid-column;
+    }
+}
+
+.card {
+    background: linear-gradient(var(--top-bg-color1), var(--top-bg-color2));
+    padding: 1.4rem;
+    margin: 0.8rem 0.4rem;
+    flex-grow: 1;
+    border-radius: 0.5rem;
+    box-shadow: var(--top-shadow-color) 0 4px 12px;
+    border-top: 1px solid var(--top-sliver-color);
+
+    display: flex;
+    flex-direction: column;
+}
+
+.card .spacer {
+    flex-grow: 1;
+}
+
+.card h2 {
+    margin: 0;
+    margin-bottom: 1rem;
+}
+
+.card-action {
+    border: 1px solid var(--link-color);
+    border-radius: 0.4rem;
+    padding: 0.8rem;
+    margin-top: 0.6rem;
+    margin-right: 0.2rem;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.card-action:hover {
+    background: var(--link-innerglow-color);
+    box-shadow: var(--link-glow-color) 0 0 0 5px;
+}
+
+.card-action.danger {
+    border: 1px solid var(--danger-link-color);
+}
+
+.card-action.danger:hover {
+    background: var(--danger-link-innerglow-color);
+    box-shadow: var(--danger-link-glow-color) 0 0 0 5px;
+}
+
+.card-actions {
+    margin-top: 1rem;
+}

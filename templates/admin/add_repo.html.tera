@@ -1,0 +1,16 @@
+{% extends "base" %}
+
+{% block title %}- Add Repo{% endblock title %}
+{% block logotitle %}{% endblock logotitle %}
+
+{% block content %}
+    <h1>Add New Repository</h1>
+    <form class="form-grid" action="/add_repo" method="post">
+        <label for="repo_url">Git URL</label>
+        <input type="text" id="repo_url" name="repo_url">
+        <br>
+        <div>
+            <input type="submit" value="Clone ->">
+        </div>
+    </form>
+{% endblock content %}

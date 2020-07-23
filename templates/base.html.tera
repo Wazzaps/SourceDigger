@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup {% block title %}{% endblock title %}</title>
+    <link rel="stylesheet" href="/static/common/main.css">
+</head>
+<body>
+    <div id="top-bar">
+        <span id="logo"><a href="/">Signup-Admin</a> {% block logotitle %}{% endblock logotitle %}</span>
+    </div>
+    <div id="main-content">
+        {% block content %}
+        {% endblock content %}
+    </div>
+</body>
+</html>
