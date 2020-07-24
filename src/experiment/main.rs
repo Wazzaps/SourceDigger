@@ -23,15 +23,13 @@ fn main() {
     let start = Instant::now();
     let tag_count = repo_to_ctags::repo_to_ctags(
         &project_name,
-        &repo_path,
         &db_path,
         &repo,
         Some(&tag_pattern),
         Some(&file_pattern),
     );
-    if tag_count != 0 {
-        ctags_to_diff::ctags_to_diff(&repo, Some(&tag_pattern), Some(&file_pattern));
-    }
+    ctags_to_diff::ctags_to_diff(&repo,
+                                 &db_path,Some(&tag_pattern), Some(&file_pattern));
     println!(
         "[footer] Finished update in {}ms",
         start.elapsed().as_millis()

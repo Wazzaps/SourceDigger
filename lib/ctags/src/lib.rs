@@ -64,7 +64,7 @@ pub struct Tag {
     pub tag_type: TagType,
 }
 
-#[derive(Debug, Eq, PartialEq, Hash)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone)]
 pub enum TagType {
     Unknown = 0,
     Function = 1,

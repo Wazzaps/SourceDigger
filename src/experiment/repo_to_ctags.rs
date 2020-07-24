@@ -47,7 +47,7 @@ fn tag_to_commit<'repo>(
 
 pub fn iter_objects_in_tags<TAGCB1, TAGCB2, FILECB>(
     repo: &Repository,
-    tags: &Vec<String>,
+    tags: &Vec<&str>,
     file_pattern: Option<&Regex>,
     mut pre_tag_callback: TAGCB1,
     mut post_tag_callback: TAGCB2,
@@ -66,10 +66,10 @@ where
             commit
                 .tree()
                 .unwrap()
-                .walk(TreeWalkMode::PreOrder, |_dir, item| {
+                .walk(TreeWalkMode::PreOrder, |dir, item| {
                     if let Some(file_pattern) = &file_pattern {
                         if file_pattern.is_match(item.name().unwrap()) {
-                            file_callback(tag, item.id(), item.name().unwrap());
+                            file_callback(tag, item.id(), &format!("{}{}", dir, item.name().unwrap()));
                         }
                     } else {
                         file_callback(tag, item.id(), item.name().unwrap());
@@ -89,7 +89,7 @@ where
 
 fn collect_objects(
     repo: &Repository,
-    tags: &Vec<String>,
+    tags: &Vec<&str>,
     file_pattern: Option<&Regex>,
 ) -> HashSet<Oid> {
     let start = Instant::now();
@@ -219,14 +219,13 @@ fn parse_objects(project_name: &OsStr, objects: &HashSet<Oid>) -> PathBuf {
 
 pub fn repo_to_ctags(
     project_name: &OsStr,
-    _repo_path: &PathBuf,
     db_path: &PathBuf,
     repo: &Repository,
     tag_pattern: Option<&Regex>,
     file_pattern: Option<&Regex>,
 ) -> usize {
     let tags = collect_tags(&repo, tag_pattern);
-    let objects = collect_objects(&repo, &tags, file_pattern);
+    let objects = collect_objects(&repo, &tags.iter().map(String::as_str).collect::<Vec<_>>(), file_pattern);
     let new_objects = write_objects(project_name, &repo, &objects);
     let ctags_file = parse_objects(project_name, &new_objects);
 
@@ -269,7 +268,7 @@ pub fn repo_to_ctags(
                     // I know this is not correct code, but it's for print throttling so i'm fine with this
                     last_print_counter.store(i, Ordering::SeqCst);
                     println!(
-                        "[progress:{:.2}%] Organizing object: {}",
+                        "[progress:{:.2}%] Organizing object's tags: {}",
                         (i as f64) / (new_objects.len() as f64) * 100.,
                         current_obj
                     );
@@ -279,11 +278,10 @@ pub fn repo_to_ctags(
         if !is_file_skipped {
             &current_file.as_mut().unwrap().write_all(
                 format!(
-                    "{}\t{}:{}\t{:?}\n",
+                    "{}\t{:?}\t{}\n",
                     tag.name,
-                    tag.file,
+                    tag.tag_type,
                     tag.line_num.unwrap_or(0),
-                    tag.tag_type
                 )
                 .as_bytes(),
             );
