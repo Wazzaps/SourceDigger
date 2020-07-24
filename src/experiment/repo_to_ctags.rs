@@ -126,7 +126,7 @@ fn write_objects(project_name: &OsStr, repo: &Repository, objects: &HashSet<Oid>
     let counter = AtomicUsize::new(0);
     let last_print_counter = AtomicUsize::new(0);
 
-    let objects_path = Path::new("signup-db").join(project_name).join("objects");
+    let objects_path = Path::new("sourcedigger-db").join(project_name).join("objects");
     std::fs::create_dir_all(&objects_path).unwrap();
 
     objects.iter().for_each(|obj| {
@@ -167,7 +167,7 @@ fn write_objects(project_name: &OsStr, repo: &Repository, objects: &HashSet<Oid>
 fn parse_objects(project_name: &OsStr, objects: &HashSet<Oid>) -> PathBuf {
     let start = Instant::now();
     println!("[progress_title] Processing objects");
-    let output_file = Path::new("signup-db").join(project_name).join("ctags");
+    let output_file = Path::new("sourcedigger-db").join(project_name).join("ctags");
 
     println!("[progress_estimate] {}ms", objects.len().max(1));
     // Flags
@@ -186,7 +186,7 @@ fn parse_objects(project_name: &OsStr, objects: &HashSet<Oid>) -> PathBuf {
     let mut ctags_proc = subprocess::Exec::cmd("ctags")
         .args(&args)
         .stdin(subprocess::Redirection::Pipe)
-        .cwd(Path::new("signup-db").join(project_name))
+        .cwd(Path::new("sourcedigger-db").join(project_name))
         .popen()
         .unwrap();
     let mut file_stream = BufWriter::new(ctags_proc.stdin.take().unwrap());

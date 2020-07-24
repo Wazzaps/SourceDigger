@@ -16,7 +16,7 @@ fn main() {
     let file_pattern = Regex::new(r"^.*\.[ch]$").unwrap();
 
     // Open repo
-    let db_path = Path::new("signup-db").join(&project_name);
+    let db_path = Path::new("sourcedigger-db").join(&project_name);
     let repo = Repository::open(&repo_path).unwrap();
 
     // Tags for each object

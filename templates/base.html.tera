@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Signup {% block title %}{% endblock title %}</title>
+    <title>SourceDigger {% block title %}{% endblock title %}</title>
     <link rel="stylesheet" href="/static/common/main.css">
 </head>
 <body>
     <div id="top-bar">
-        <span id="logo"><a href="/">Signup-Admin</a> {% block logotitle %}{% endblock logotitle %}</span>
+        <span id="logo"><a href="/">SourceDigger Admin</a> {% block logotitle %}{% endblock logotitle %}</span>
     </div>
     <div id="main-content">
         {% block content %}
