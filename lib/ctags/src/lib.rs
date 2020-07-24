@@ -1,6 +1,6 @@
-use std::io::{BufReader, BufRead, Read};
-use std::path::PathBuf;
 use std::fs::File;
+use std::io::{BufRead, BufReader, Read};
+use std::path::PathBuf;
 
 #[cfg(test)]
 mod tests {
@@ -11,7 +11,10 @@ mod tests {
     #[test]
     fn smoke() {
         let mut source = vec![];
-        File::open("./test_res/smoke/ctags").unwrap().read_to_end(&mut source).unwrap();
+        File::open("./test_res/smoke/ctags")
+            .unwrap()
+            .read_to_end(&mut source)
+            .unwrap();
 
         let mut tags = Ctags::new(source.as_slice(), Some("./test_res/smoke"));
         assert_eq!(
@@ -61,11 +64,11 @@ pub struct Tag {
     pub tag_type: TagType,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Hash)]
 pub enum TagType {
-    Function,
-    Define,
-    Unknown
+    Unknown = 0,
+    Function = 1,
+    Define = 2,
 }
 
 impl<R: Read> Ctags<R> {
@@ -110,7 +113,7 @@ impl<R: Read> Iterator for Ctags<R> {
         let tag_type = match extra.next().unwrap_or("") {
             "f" => TagType::Function,
             "d" => TagType::Define,
-            _ => TagType::Unknown
+            _ => TagType::Unknown,
         };
 
         if expression.starts_with("/^") && expression.ends_with("$/") {
@@ -124,21 +127,25 @@ impl<R: Read> Iterator for Ctags<R> {
                     code_file.read_to_end(&mut code_contents).unwrap();
                     let code_contents = String::from_utf8_lossy(&code_contents);
 
-                    let line_num = code_contents.lines().enumerate().find_map(|(line, contents)| {
-                        if *contents == expression[2..expression.len()-2] {
-                            Some((line as u64) + 1)
-                        } else {
-                            None
-                        }
-                    });
+                    let line_num =
+                        code_contents
+                            .lines()
+                            .enumerate()
+                            .find_map(|(line, contents)| {
+                                if *contents == expression[2..expression.len() - 2] {
+                                    Some((line as u64) + 1)
+                                } else {
+                                    None
+                                }
+                            });
 
                     return Some(Tag {
                         name: name.to_string(),
                         file: file.to_string(),
                         expression: expression.to_string(),
                         line_num,
-                        tag_type
-                    })
+                        tag_type,
+                    });
                 }
             }
         } else if expression.chars().all(char::is_numeric) {
@@ -149,8 +156,8 @@ impl<R: Read> Iterator for Ctags<R> {
                 file: file.to_string(),
                 expression: expression.to_string(),
                 line_num: Some(line_num),
-                tag_type
-            })
+                tag_type,
+            });
         }
 
         // default case, expression was not parsed correctly
@@ -159,8 +166,7 @@ impl<R: Read> Iterator for Ctags<R> {
             file: file.to_string(),
             expression: expression.to_string(),
             line_num: None,
-            tag_type
-        })
-
+            tag_type,
+        });
     }
 }
