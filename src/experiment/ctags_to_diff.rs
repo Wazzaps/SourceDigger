@@ -1,5 +1,5 @@
 use crate::repo_to_ctags;
-use ctags::TagType;
+use ctags::SymbolType;
 use git2::{Oid, Repository};
 use regex::Regex;
 use std::borrow::BorrowMut;
@@ -25,7 +25,7 @@ pub enum TagAction {
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
 pub struct TagID {
     name: String,
-    tag_type: TagType,
+    tag_type: SymbolType,
 }
 
 /**
@@ -44,7 +44,7 @@ type TagHashMap = HashMap<TagID, Vec<TagData>>;
 
 fn load_tags<F>(db_path: &PathBuf, obj_id: Oid, mut callback: F)
 where
-    F: FnMut(&str, u64, TagType, Option<&str>),
+    F: FnMut(&str, u64, SymbolType, Option<&str>),
 {
     let tags;
     if let Ok(file) = File::open(
@@ -63,9 +63,9 @@ where
         let (name, tag_type, line_num, extra_data) = (
             parts.next().unwrap(),
             match parts.next().unwrap() {
-                "Function" => TagType::Function,
-                "Define" => TagType::Define,
-                _ => TagType::Unknown,
+                "Function" => SymbolType::Function,
+                "Define" => SymbolType::Define,
+                _ => SymbolType::Unknown,
             },
             parts.next().unwrap().parse::<u64>().unwrap(),
             parts.next(),

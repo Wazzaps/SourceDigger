@@ -175,6 +175,7 @@ fn parse_objects(project_name: &OsStr, objects: &HashSet<Oid>) -> PathBuf {
         "--tag-relative".into(),
         "--language-force=c".into(),
         "--sort=no".into(),
+        "--append=yes".into(),
         // Output file
         "-f".into(),
         "ctags".into(),
@@ -231,8 +232,8 @@ pub fn repo_to_ctags(
 
     // Split ctags per git object
     let start = Instant::now();
-    println!("[progress_title] Organizing tags by object");
-    let ctags = Ctags::new(
+    println!("[progress_title] Organizing symbols by object");
+    let symbols = Ctags::new(
         BufReader::new(File::open(&ctags_file).unwrap()),
         Some(&db_path),
     );
@@ -246,10 +247,10 @@ pub fn repo_to_ctags(
     let last_print_counter = AtomicUsize::new(0);
     let file_counter = AtomicUsize::new(0);
     let mut skip_counter = 0usize;
-    let mut tag_counter = 0usize;
-    for tag in ctags {
-        if current_obj != tag.file {
-            current_obj = tag.file.clone();
+    let mut sym_counter = 0usize;
+    for symbol in symbols {
+        if current_obj != symbol.file {
+            current_obj = symbol.file.clone();
             let out_path = tags_basepath.join(Path::new(&current_obj).file_name().unwrap());
 
             if out_path.exists() {
@@ -268,7 +269,7 @@ pub fn repo_to_ctags(
                     // I know this is not correct code, but it's for print throttling so i'm fine with this
                     last_print_counter.store(i, Ordering::SeqCst);
                     println!(
-                        "[progress:{:.2}%] Organizing object's tags: {}",
+                        "[progress:{:.2}%] Organizing object's symbols: {}",
                         (i as f64) / (new_objects.len() as f64) * 100.,
                         current_obj
                     );
@@ -279,22 +280,22 @@ pub fn repo_to_ctags(
             &current_file.as_mut().unwrap().write_all(
                 format!(
                     "{}\t{:?}\t{}\n",
-                    tag.name,
-                    tag.tag_type,
-                    tag.line_num.unwrap_or(0),
+                    symbol.name,
+                    symbol.symbol_type,
+                    symbol.line_num.unwrap_or(0),
                 )
                 .as_bytes(),
             );
-            tag_counter += 1;
+            sym_counter += 1;
         }
     }
     println!(
-        "[progress:100%] Organized {} tags of {} objects ({} objects skipped) in {} ms",
-        tag_counter,
+        "[progress:100%] Organized {} symbols of {} objects ({} objects skipped) in {} ms",
+        sym_counter,
         file_counter.into_inner(),
         skip_counter,
         start.elapsed().as_millis()
     );
 
-    tag_counter
+    sym_counter
 }
