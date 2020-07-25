@@ -19,7 +19,7 @@ fn main() {
     let db_path = Path::new("sourcedigger-db").join(&project_name);
     let repo = Repository::open(&repo_path).unwrap();
 
-    // Tags for each object
+    // Symbols for each object
     let start = Instant::now();
     let tag_count = repo_to_ctags::repo_to_ctags(
         &project_name,

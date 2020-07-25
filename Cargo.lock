@@ -1316,6 +1316,7 @@ dependencies = [
  "ctags",
  "git2",
  "hex",
+ "lazy_static",
  "rayon",
  "regex",
  "rocket",
