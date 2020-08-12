@@ -1,9 +1,10 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ProjectRepo {
     pub name: String,
     pub origin: String,
+    pub source_viewer: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

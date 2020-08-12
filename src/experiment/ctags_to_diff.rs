@@ -3,7 +3,7 @@ use ctags::SymbolType;
 use git2::{Oid, Repository};
 use regex::Regex;
 use std::borrow::BorrowMut;
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque, BTreeSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
@@ -16,7 +16,6 @@ pub enum TagAction {
     Add,
     Remove,
     Modify,
-    Move,
 }
 
 /**
@@ -26,6 +25,18 @@ pub enum TagAction {
 pub struct TagID {
     name: String,
     tag_type: SymbolType,
+}
+
+impl PartialOrd for TagID {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(alphanumeric_sort::compare_str(&self.name.to_ascii_lowercase(), &other.name.to_ascii_lowercase()))
+    }
+}
+
+impl Ord for TagID {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        alphanumeric_sort::compare_str(&self.name.to_ascii_lowercase(), &other.name.to_ascii_lowercase())
+    }
 }
 
 /**
@@ -65,6 +76,7 @@ where
             match parts.next().unwrap() {
                 "Function" => SymbolType::Function,
                 "Define" => SymbolType::Define,
+                "Variable" => SymbolType::Variable,
                 _ => SymbolType::Unknown,
             },
             parts.next().unwrap().parse::<u64>().unwrap(),
@@ -80,6 +92,7 @@ pub fn ctags_to_diff(
     db_path: &PathBuf,
     tag_pattern: Option<&Regex>,
     file_pattern: Option<&Regex>,
+    tag_time_sort: bool,
 ) {
     let start = Instant::now();
     println!("[progress_title] Creating comparison files");
@@ -100,8 +113,8 @@ pub fn ctags_to_diff(
             let prev_ctags = ctags_maps.back().unwrap();
             let new_ctags = ctags_maps.front().unwrap();
 
-            let prev_ids: HashSet<TagID> = prev_ctags.keys().cloned().collect();
-            let new_ids: HashSet<TagID> = new_ctags.keys().cloned().collect();
+            let prev_ids: BTreeSet<TagID> = prev_ctags.keys().cloned().collect();
+            let new_ids: BTreeSet<TagID> = new_ctags.keys().cloned().collect();
 
             let added_ids = new_ids.difference(&prev_ids);
             let common_ids = prev_ids.intersection(&new_ids);
@@ -128,8 +141,12 @@ pub fn ctags_to_diff(
             let mut out_file = BufWriter::new(File::create(diff_path).unwrap());
             for (diff_act, diff_id, diff_data) in diffs.iter() {
                 out_file.write_all(format!(
-                    "{:?}\t{}\t{:?}\t{}\t{}\t{}\n",
-                    diff_act,
+                    "{}\t{}\t{:?}\t{}\t{}\t{}\n",
+                    match diff_act {
+                        TagAction::Add => "a",
+                        TagAction::Remove => "r",
+                        TagAction::Modify => "m",
+                    },
                     diff_id.name,
                     diff_id.tag_type,
                     diff_data.file,
@@ -145,7 +162,7 @@ pub fn ctags_to_diff(
         current_tag = next_tag_name.to_string();
     };
 
-    let tags = repo_to_ctags::collect_tags(&repo, tag_pattern);
+    let tags = repo_to_ctags::collect_tags(&repo, tag_pattern, tag_time_sort);
     let non_existent_tags = tags.iter().enumerate().filter_map(|(i, tag)| {
         let diff_path = Path::new(db_path)
             .join("diffs")

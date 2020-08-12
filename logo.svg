@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="logo.svg"
+   inkscape:export-filename="/home/david/code/sourcedigger/static/logo.png"
+   inkscape:export-xdpi="179.13974"
+   inkscape:export-ydpi="179.13974"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="373.60722"
+     inkscape:cy="901.37397"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="mm"
+     inkscape:window-width="2560"
+     inkscape:window-height="1363"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#7d7d95;fill-opacity:1;stroke:none;stroke-width:1.97608209;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect2160"
+       width="30.342791"
+       height="27.233925"
+       x="13.695597"
+       y="39.914246"
+       ry="3.8596539"
+       inkscape:export-filename="/home/david/code/sourcedigger/static/logo.png"
+       inkscape:export-xdpi="179.13974"
+       inkscape:export-ydpi="179.13974" />
+    <path
+       style="fill:#1e1e24;fill-opacity:1;stroke:#1e1e24;stroke-width:2.64583325;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       d="m 37.399932,39.991478 -0.0042,5.716991 -8.609034,17.699337 -8.609033,-17.699338 -0.0042,-5.794585"
+       id="rect1712"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/david/code/sourcedigger/static/logo.png"
+       inkscape:export-xdpi="179.13974"
+       inkscape:export-ydpi="179.13974" />
+    <path
+       style="fill:#7d7d95;fill-opacity:1;stroke:none;stroke-width:3.17100739;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       d="m 20.17608,45.669667 1.103198,2.267158 9.723375,-2.267158 z m 14.210206,0 -12.762382,2.975466 1.442799,2.965113 12.874155,-3.001796 1.429972,-2.938783 z m 1.121801,3.828332 -12.096757,2.820556 1.148732,2.360704 9.505378,-2.216297 z m -1.875494,3.854512 -8.727904,2.035055 1.038458,2.134153 6.385203,-1.488782 z m -1.737239,3.570275 -5.60743,1.307467 1.077616,2.214571 3.17651,-0.74064 z m -1.7863,3.671247 -2.398736,0.559324 1.063287,2.18524 z"
+       id="rect1317"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/david/code/sourcedigger/static/logo.png"
+       inkscape:export-xdpi="179.13974"
+       inkscape:export-ydpi="179.13974" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.6404686px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.11601172"
+       x="51.636261"
+       y="61.444046"
+       id="text2164"><tspan
+         sodipodi:role="line"
+         id="tspan2162"
+         x="51.636261"
+         y="61.444046"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.27424812px;font-family:'Roboto Slab';-inkscape-font-specification:'Roboto Slab';stroke-width:0.11601172">SourceDigger</tspan></text>
+  </g>
+</svg>

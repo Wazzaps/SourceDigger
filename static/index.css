@@ -1,0 +1,117 @@
+body {
+    margin: 0;
+    background: #222229;
+}
+
+#logo {
+    display: flex;
+    justify-content: center;
+    color: #c7c7d7;
+    font-family: 'Roboto Slab', sans-serif;
+    font-size: 3.2rem;
+    line-height: 6rem;
+    margin-top: 3rem;
+}
+
+.gap {
+    width: 1.6rem;
+}
+
+#logo-icon {
+    height: 4rem;
+    align-self: center;
+}
+
+#projects {
+    display: flex;
+    margin: 3rem auto;
+    padding: 0 1rem;
+    max-width: 1000px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#projects li a {
+    text-decoration: none;
+}
+
+#projects li a div {
+    display: block;
+    padding: 1.5rem;
+    width: 7rem;
+    height: 6rem;
+    box-shadow: #1a1a1a 0 6px 14px;
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+    /*background-color: rgb(62, 62, 76);*/
+    background-color: rgb(44, 44, 54);
+    transition: box-shadow 0.15s, background 0.15s;
+}
+
+#projects li a span {
+    display: block;
+    color: #b5b9c4;
+    font-family: 'Roboto Slab', sans-serif;
+    font-size: 2rem;
+    text-align: center;
+    text-shadow: rgb(62, 62, 76) 0 0 8px;
+    margin-top: 0.7rem;
+    transition: color 0.15s;
+}
+
+#projects li a:hover div {
+    box-shadow: #171717 0 6px 21px;
+    background-color: rgb(55, 55, 68);
+}
+
+#projects li a:hover span {
+    color: #fff;
+}
+
+
+#projects li {
+    list-style: none;
+    margin: 1rem;
+}
+
+#footer {
+    margin-top: 8rem;
+    margin-bottom: 2rem;
+    color: #8d8d97;
+    font-family: 'Roboto Slab', sans-serif;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+#footer a {
+    color: #c4c4d0;
+}
+
+@media only screen and (max-width: 500px) {
+    #logo {
+        margin-top: 2rem;
+        font-size: 1.6rem;
+        line-height: 3rem;
+    }
+
+    #logo-icon {
+        height: 2rem;
+    }
+
+    .gap {
+        width: 0.8rem;
+    }
+
+    #projects li a div {
+        padding: 1.5rem;
+        width: 3.5rem;
+        height: 3rem;
+        background-size: 70%;
+    }
+
+    #projects li a span {
+        font-size: 1.2rem;
+
+    }
+}

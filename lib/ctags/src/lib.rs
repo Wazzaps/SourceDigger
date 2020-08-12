@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Read, Split};
 use std::path::PathBuf;
 use std::iter::Enumerate;
+use regex::bytes::Regex;
 
 #[cfg(test)]
 mod tests {
@@ -66,11 +67,12 @@ pub struct Symbol {
     pub symbol_type: SymbolType,
 }
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
 pub enum SymbolType {
     Unknown = 0,
     Function = 1,
     Define = 2,
+    Variable = 3,
 }
 
 impl<R: Read> Ctags<R> {
@@ -116,6 +118,7 @@ impl<R: Read> Iterator for Ctags<R> {
         let symbol_type = match extra.next().unwrap_or("") {
             "f" => SymbolType::Function,
             "d" => SymbolType::Define,
+            "v" => SymbolType::Variable,
             _ => SymbolType::Unknown,
         };
 
@@ -132,15 +135,40 @@ impl<R: Read> Iterator for Ctags<R> {
                 }
 
                 // Read file
-                let line_num =
-                    self.current_file.as_mut().unwrap().1
+                let regex = Regex::new(r#"\\([\\/])"#).unwrap();
+
+                fn look_for_line<R: Read>(self_obj: &mut Ctags<R>, regex: &Regex, expression: &str) -> Option<u64> {
+                    self_obj.current_file.as_mut().unwrap().1
                         .find_map(|(line, contents)| {
-                            if contents.unwrap() == expression[2..expression.len() - 2].as_bytes() {
+                            let contents = contents.unwrap();
+                            // println!("{}", String::from_utf8_lossy(regex.replace_all(&contents, "$1".as_bytes()).as_ref()));
+                            // println!("{}", expression);
+                            // println!("||||||||||||||||||||||");
+                            if contents == regex.replace_all(
+                                &expression[2..expression.len() - 2].as_bytes(),
+                                "$1".as_bytes()
+                            ).as_ref() {
                                 Some((line as u64) + 1)
                             } else {
                                 None
                             }
-                        });
+                        })
+                }
+                let line_num = look_for_line(self, &regex, expression);
+
+                if line_num.is_none() {
+                    // Reopen file
+                    self.current_file.replace((
+                        code_path.clone(),
+                        BufReader::new(File::open(&code_path).unwrap()).split('\n' as u8).enumerate()
+                    ));
+
+                    let line_num = look_for_line(self, &regex, expression);
+                    if line_num.is_none() {
+                        println!("Not found: {}", line);
+                        println!("----------------------");
+                    }
+                }
 
                 return Some(Symbol {
                     name: name.to_string(),

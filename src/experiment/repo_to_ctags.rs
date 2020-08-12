@@ -1,30 +1,62 @@
 use std::collections::HashSet;
 use std::ffi::{OsStr, OsString};
-use std::io::{BufReader, BufWriter, Write};
+use std::io::{BufReader, BufWriter, Write, Read};
 use std::os::unix::ffi::OsStrExt;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Instant;
 
-use ctags::Ctags;
+use ctags::{Ctags, SymbolType};
 use git2::{Commit, ObjectType, Oid, Repository, TreeWalkMode, TreeWalkResult};
 use regex::Regex;
 use std::fs::File;
 use subprocess::ExitStatus;
 
-pub fn collect_tags(repo: &Repository, pattern: Option<&Regex>) -> Vec<String> {
-    let tags = repo.tag_names(None).unwrap();
-    let tags: Vec<&str> = tags.iter().map(|tag| tag.unwrap()).collect();
+pub fn collect_tags(repo: &Repository, pattern: Option<&Regex>, time_sort: bool) -> Vec<String> {
+    let mut tags = vec![];
+    let mut timed_tags = vec![];
+    repo.tag_foreach(|oid, name| {
+        let obj = repo.find_object(oid, None).unwrap();
+        let commit = if let Some(tag) = obj.as_tag() {
+            tag.target().unwrap().into_commit()
+        } else {
+            obj.into_commit()
+        };
+
+        if let Ok(commit) = commit {
+            if time_sort {
+                timed_tags.push((
+                    commit.time().seconds(),
+                    String::from_utf8_lossy(name).split('/').last().unwrap().to_string()
+                ));
+            } else {
+                tags.push(String::from_utf8_lossy(name).split('/').last().unwrap().to_string());
+            }
+        }
+        true
+    }).unwrap();
+
+    if time_sort {
+        timed_tags.sort_unstable_by_key(|t| t.0);
+    } else {
+        alphanumeric_sort::sort_path_slice(&mut tags);
+    }
+
+    let tags = if time_sort {
+        timed_tags.into_iter().map(|t| t.1).collect()
+    } else {
+        tags
+    };
 
     if let Some(pattern) = pattern {
         let mut match_tags = HashSet::new();
         let mut filtered_tags = Vec::new();
         for tag in tags {
-            let cap = pattern.captures(tag);
+            let cap = pattern.captures(&tag);
             if let Some(cap) = cap {
                 let cap = cap.get(1);
                 if let Some(cap) = cap {
-                    if match_tags.insert(cap.as_str()) {
+                    if match_tags.insert(cap.as_str().to_string()) {
                         filtered_tags.push(tag.to_string());
                     }
                 }
@@ -33,7 +65,7 @@ pub fn collect_tags(repo: &Repository, pattern: Option<&Regex>) -> Vec<String> {
 
         filtered_tags
     } else {
-        tags.iter().map(|s| s.to_string()).collect()
+        tags
     }
 }
 
@@ -45,18 +77,18 @@ fn tag_to_commit<'repo>(
     repo.find_reference(&full_tag)?.peel_to_commit()
 }
 
-pub fn iter_objects_in_tags<TAGCB1, TAGCB2, FILECB>(
+pub fn iter_objects_in_tags<TagCB1, TagCB2, FileCB>(
     repo: &Repository,
     tags: &Vec<&str>,
     file_pattern: Option<&Regex>,
-    mut pre_tag_callback: TAGCB1,
-    mut post_tag_callback: TAGCB2,
-    mut file_callback: FILECB,
+    mut pre_tag_callback: TagCB1,
+    mut post_tag_callback: TagCB2,
+    mut file_callback: FileCB,
 ) -> usize
 where
-    TAGCB1: FnMut(usize, &str),
-    TAGCB2: FnMut(usize, &str),
-    FILECB: FnMut(&str, Oid, &str),
+    TagCB1: FnMut(usize, &str),
+    TagCB2: FnMut(usize, &str),
+    FileCB: FnMut(&str, Oid, &str),
 {
     let mut obj_count = 0usize;
 
@@ -218,17 +250,106 @@ fn parse_objects(project_name: &OsStr, objects: &HashSet<Oid>) -> PathBuf {
     output_file
 }
 
+fn fix_whitespace(src: &str) -> String {
+    let pattern1 = Regex::new(r"[ \t]+").unwrap();
+    let pattern2 = Regex::new(r"\([ \t]").unwrap();
+    let pattern3 = Regex::new(r"[ \t]\)").unwrap();
+    let src = pattern1.replace_all(src, " ");
+    let src = pattern2.replace_all(src.as_ref(), "(");
+    pattern3.replace_all(src.as_ref(), ")").to_string()
+}
+
+fn get_func_args_at_line(source_code: &str, line_num: Option<u64>) -> String {
+    if let Some(line_num) = line_num {
+        let mut result = String::new();
+        let mut depth = 0;
+        let mut done = false;
+        for line in source_code.lines().skip((line_num - 1) as usize).take(20) {
+            if done {
+                break;
+            }
+            for c in line.chars() {
+                if c == '(' {
+                    depth += 1;
+                } else if c == ')' {
+                    depth -= 1;
+                    if depth == 0 {
+                        result.push(c);
+                        done = true;
+                        break;
+                    }
+                }
+                if depth != 0 {
+                    result.push(c);
+                }
+            }
+        }
+        if !done {
+            result += ", ???)";
+        }
+
+        fix_whitespace(&result)
+    } else {
+        "(???)".to_string()
+    }
+}
+
+fn get_var_contents_at_line(source_code: &str, line_num: Option<u64>) -> String {
+    if let Some(line_num) = line_num {
+        let mut result = String::new();
+        let mut depth = 0;
+        let mut done = false;
+        for line in source_code.lines().skip((line_num - 1) as usize).take(20) {
+            if done {
+                break;
+            }
+            for c in line.chars() {
+                if c == '=' {
+                    depth = 1;
+                } else if c == ';' {
+                    depth -= 1;
+                    if depth <= 0 {
+                        done = true;
+                        break;
+                    }
+                }
+                if depth != 0 {
+                    result.push(c);
+                }
+            }
+        }
+        if !done {
+            result += " ???";
+        }
+        let result = " ".to_string() + &fix_whitespace(result.trim());
+
+        result
+    } else {
+        "= ???".to_string()
+    }
+}
+
+fn get_extra_info_at_line(symbol_type: SymbolType, source_code: &str, line_num: Option<u64>) -> String {
+    match symbol_type {
+        SymbolType::Function => get_func_args_at_line(source_code, line_num),
+        SymbolType::Variable => get_var_contents_at_line(source_code, line_num),
+        // SymbolType::Define => {},
+        _ => "".to_string(),
+    }
+}
+
 pub fn repo_to_ctags(
     project_name: &OsStr,
     db_path: &PathBuf,
     repo: &Repository,
     tag_pattern: Option<&Regex>,
     file_pattern: Option<&Regex>,
+    tag_time_sort: bool,
 ) -> usize {
-    let tags = collect_tags(&repo, tag_pattern);
+    let tags = collect_tags(&repo, tag_pattern, tag_time_sort);
     let objects = collect_objects(&repo, &tags.iter().map(String::as_str).collect::<Vec<_>>(), file_pattern);
-    let new_objects = write_objects(project_name, &repo, &objects);
-    let ctags_file = parse_objects(project_name, &new_objects);
+    let _new_objects = write_objects(project_name, &repo, &objects);
+    let ctags_file = parse_objects(project_name, &objects);
 
     // Split ctags per git object
     let start = Instant::now();
@@ -239,8 +360,10 @@ pub fn repo_to_ctags(
     );
 
     let tags_basepath = db_path.join("tags");
+    let objs_basepath = db_path.join("objects");
     std::fs::create_dir_all(&tags_basepath).unwrap();
-    let mut current_file = None;
+    let mut current_inp_file = String::new();
+    let mut current_out_file = None;
     let mut current_obj = String::new();
     let mut is_file_skipped = false;
 
@@ -249,40 +372,49 @@ pub fn repo_to_ctags(
     let mut skip_counter = 0usize;
     let mut sym_counter = 0usize;
     for symbol in symbols {
+        if symbol.symbol_type == SymbolType::Unknown {
+            continue;
+        }
         if current_obj != symbol.file {
             current_obj = symbol.file.clone();
             let out_path = tags_basepath.join(Path::new(&current_obj).file_name().unwrap());
+            let inp_path = objs_basepath.join(Path::new(&current_obj).file_name().unwrap());
 
             if out_path.exists() {
                 is_file_skipped = true;
                 skip_counter += 1;
             } else {
-                current_file.replace(File::create(out_path).unwrap());
+                let mut inp_contents = vec![];
+                File::open(inp_path).unwrap().read_to_end(&mut inp_contents).unwrap();
+
+                let _ = std::mem::replace(&mut current_inp_file, String::from_utf8_lossy(&inp_contents).to_string());
+                current_out_file.replace(File::create(out_path).unwrap());
                 is_file_skipped = false;
 
                 // Print only about once every 0.1% of progress
                 let i = file_counter.fetch_add(1, Ordering::SeqCst);
                 if (((i - last_print_counter.load(Ordering::SeqCst)) as f64)
-                    / (new_objects.len() as f64))
+                    / (objects.len() as f64))
                     > 0.001
                 {
                     // I know this is not correct code, but it's for print throttling so i'm fine with this
                     last_print_counter.store(i, Ordering::SeqCst);
                     println!(
                         "[progress:{:.2}%] Organizing object's symbols: {}",
-                        (i as f64) / (new_objects.len() as f64) * 100.,
+                        (i as f64) / (objects.len() as f64) * 100.,
                         current_obj
                     );
                 }
             }
         }
         if !is_file_skipped {
-            &current_file.as_mut().unwrap().write_all(
+            &current_out_file.as_mut().unwrap().write_all(
                 format!(
-                    "{}\t{:?}\t{}\n",
+                    "{}\t{:?}\t{}\t{}\n",
                     symbol.name,
                     symbol.symbol_type,
                     symbol.line_num.unwrap_or(0),
+                    get_extra_info_at_line(symbol.symbol_type, &current_inp_file, symbol.line_num)
                 )
                 .as_bytes(),
             );

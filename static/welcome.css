@@ -1,0 +1,28 @@
+body {
+    color: #eee;
+    font-family: 'Roboto Slab', sans-serif;
+    font-size: 1.3rem;
+    max-width: 700px;
+    margin: 3rem auto;
+    padding: 0 1rem;
+}
+
+#footer {
+    color: #8d8d97;
+}
+
+#footer a {
+    color: #c4c4d0;
+}
+
+pre {
+    display: inline;
+    background: #303039;
+    border: 1px solid #464653;
+    border-radius: 4px;
+    padding: 3px 6px;
+}
+
+li {
+    margin-top: 8px;
+}

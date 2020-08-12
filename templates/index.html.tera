@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SourceDigger</title>
+    <link rel="stylesheet" href="/static/index.css">
+    <link rel="stylesheet" href="/static/common/fonts.css">
+</head>
+<body>
+    <div id="logo">
+        <img id="logo-icon" src="/static/logo.png" alt="SourceDigger">
+        <span class="gap wide"></span>
+        <span class="wide">SourceDigger</span>
+    </div>
+    <ul id="projects">
+        <li><a href="/linux"><div style="background-image: url('/linux/project_logo.svg');"></div><span>Linux</span></a></li>
+        <li><a href="/vim"><div style="background-image: url('/vim/project_logo.svg');"></div><span>Vim</span></a></li>
+        <li><a href="/git"><div style="background-image: url('/git/project_logo.svg');"></div><span>Git</span></a></li>
+    </ul>
+    <div id="footer">[Alpha preview, <a href="https://github.com/Wazzaps/SourceDigger/issues">report bugs here</a>]</div>
+</ul>
+</body>
+</html>

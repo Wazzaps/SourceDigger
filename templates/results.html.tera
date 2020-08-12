@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{query_dash}}{{Project}} - SourceDigger</title>
+    <link rel="stylesheet" href="/static/results.css">
+    <link rel="stylesheet" href="/static/common/fonts.css">
+</head>
+<body>
+<div id="top-bar-shadow"></div>
+<div id="top-bar">
+    <span id="logo">
+        <a href="/" tabindex='-1'>
+            <img id="logo-icon" src="/static/logo.png" alt="SourceDigger">
+            <span class="gap wide"></span>
+            <span class="wide">SourceDigger</span>
+        </a>
+        <span class="gap wide"></span>
+        <span class="wide">&middot;</span>
+        <span class="gap"></span>{{Project}}
+    </span>
+    <form id="query-form" method="get" autocomplete="off">
+        <input id="query" autofocus tabindex='1' type="text" placeholder="Search for symbols" name="q" value="{{q}}">
+        <div id="autocomplete">
+            <ul id="autocomplete-results" style="display: none;"></ul>
+        </div>
+    </form>
+</div>
+<iframe id="results" src="/{{project}}/diffs?{{diff_params}}"></iframe>
+<script src="/static/results.js"></script>
+</body>
+</html>

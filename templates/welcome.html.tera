@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/static/welcome.css">
+    <link rel="stylesheet" href="/static/common/fonts.css">
+</head>
+<body>
+    <p>Explore the project by entering a query above</p>
+    <p>Some example queries:</p>
+    <ul>
+        <li><pre>print_line</pre> &mdash; Exact match</li>
+        <li><pre>insert*</pre> &mdash; Glob</li>
+        <li><pre>do_[ab].*</pre> &mdash; Regex</li>
+    </ul>
+    <br>
+    <p id="footer">[Alpha preview, <a href="https://github.com/Wazzaps/SourceDigger/issues">report bugs here</a>]</p>
+</body>
+</html>
