@@ -97,6 +97,11 @@ fn project_logo_svg_view(project: String) -> Option<CachedFile<NamedFile>> {
     NamedFile::open(Path::new("sourcedigger-db").join(project).join("logo.svg")).ok().map(|nf| CachedFile(nf))
 }
 
+#[get("/robots.txt")]
+fn robots_txt_view() -> Option<CachedFile<NamedFile>> {
+    NamedFile::open("static/robots.txt").ok().map(|nf| CachedFile(nf))
+}
+
 #[get("/")]
 fn index_view() -> CachedFile<Template> {
     let context = HashMap::<String, String>::new();
@@ -114,7 +119,7 @@ fn main() {
         // .mount("/static", StaticFiles::from("./static"))
         .mount(
             "/",
-            routes![index_view, autocomplete_view, empty_search_view, search_view, project_view, project_logo_view, project_logo_svg_view, files],
+            routes![index_view, autocomplete_view, empty_search_view, search_view, project_view, project_logo_view, project_logo_svg_view, robots_txt_view, files],
         )
         .launch();
 }
