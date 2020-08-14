@@ -17,6 +17,8 @@
         <li><a href="/linux"><div style="background-image: url('/linux/project_logo.svg');"></div><span>Linux</span></a></li>
         <li><a href="/vim"><div style="background-image: url('/vim/project_logo.svg');"></div><span>Vim</span></a></li>
         <li><a href="/git"><div style="background-image: url('/git/project_logo.svg');"></div><span>Git</span></a></li>
+        <li><a href="/musl"><div style="background-image: url('/musl/project_logo.svg');"></div><span>Musl</span></a></li>
+        <li><a href="/glibc"><div style="background-image: url('/glibc/project_logo.svg');"></div><span>Glibc</span></a></li>
     </ul>
     {%include "footer"%}
 </ul>

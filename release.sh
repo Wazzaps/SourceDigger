@@ -10,7 +10,7 @@ strip release/sourcedigger-server
 
 echo '--- Copying database'
 mkdir release/sourcedigger-db
-for proj in sourcedigger-db/{vim,git,linux}; do
+for proj in sourcedigger-db/{linux,vim,git,musl,glibc}; do
   echo "$proj"
   mkdir release/"$proj"
   cp "$proj"/config.toml release/"$proj"/

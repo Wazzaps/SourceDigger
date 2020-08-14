@@ -455,8 +455,8 @@ pub fn repo_to_ctags(
 ) -> usize {
     let tags = collect_tags(&repo, tag_pattern, tag_time_sort);
     let objects = collect_objects(&repo, &tags.iter().map(String::as_str).collect::<Vec<_>>(), file_pattern);
-    let _new_objects = write_objects(project_name, &repo, &objects);
-    let ctags_file = parse_objects(project_name, &objects);
+    let new_objects = write_objects(project_name, &repo, &objects);
+    let ctags_file = parse_objects(project_name, &new_objects);
 
     // Split ctags per git object
     let start = Instant::now();
@@ -501,14 +501,14 @@ pub fn repo_to_ctags(
                 // Print only about once every 0.1% of progress
                 let i = file_counter.fetch_add(1, Ordering::SeqCst);
                 if (((i - last_print_counter.load(Ordering::SeqCst)) as f64)
-                    / (objects.len() as f64))
+                    / (new_objects.len() as f64))
                     > 0.001
                 {
                     // I know this is not correct code, but it's for print throttling so i'm fine with this
                     last_print_counter.store(i, Ordering::SeqCst);
                     println!(
                         "[progress:{:.2}%] Organizing object's symbols: {}",
-                        (i as f64) / (objects.len() as f64) * 100.,
+                        (i as f64) / (new_objects.len() as f64) * 100.,
                         current_obj
                     );
                 }
