@@ -33,7 +33,7 @@ fn read_args() -> (OsString, PathBuf, Regex, Regex) {
 fn main() {
     // Params
     let (project_name, repo_path, tag_pattern, file_pattern) = read_args();
-    let tag_time_sort = true;
+    let tag_time_sort = false;
 
     // Open repo
     let db_path = Path::new("sourcedigger-db").join(&project_name);

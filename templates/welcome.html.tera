@@ -17,6 +17,6 @@
         <li><pre>do_[ab].*</pre> &mdash; Regex</li>
     </ul>
     <br>
-    <p id="footer">[Alpha preview, <a href="https://github.com/Wazzaps/SourceDigger/issues">report bugs here</a>]</p>
+    {%include "footer"%}
 </body>
 </html>

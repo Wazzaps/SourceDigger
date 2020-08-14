@@ -18,7 +18,7 @@
         <li><a href="/vim"><div style="background-image: url('/vim/project_logo.svg');"></div><span>Vim</span></a></li>
         <li><a href="/git"><div style="background-image: url('/git/project_logo.svg');"></div><span>Git</span></a></li>
     </ul>
-    <div id="footer">[Alpha preview, <a href="https://github.com/Wazzaps/SourceDigger/issues">report bugs here</a>]</div>
+    {%include "footer"%}
 </ul>
 </body>
 </html>

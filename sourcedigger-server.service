@@ -1,0 +1,9 @@
+[Unit]
+Description=SourceDigger Server
+
+[Service]
+Type=simple
+ExecStart=/srv/sourcedigger/sourcedigger-server
+
+[Install]
+WantedBy=multi-user.target

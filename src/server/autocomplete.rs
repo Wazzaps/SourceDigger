@@ -2,6 +2,7 @@ use std::path::Path;
 use std::io::{BufReader, BufRead};
 use std::sync::mpsc::Receiver;
 use std::time::Instant;
+use regex::Regex;
 
 pub fn complete(project: String, query: String, count: u64) -> Receiver<String> {
     assert!(!project.contains("/"));
@@ -9,6 +10,10 @@ pub fn complete(project: String, query: String, count: u64) -> Receiver<String> 
 
     std::thread::spawn(move || {
         let start = Instant::now();
+
+        let query_expander = Regex::new("(^|[^.\\]])([*+])").unwrap();
+
+        let query = query_expander.replace_all(&query, "$1.$2");
 
         let rg_query = if query.chars().all(|x| x.is_alphanumeric() || x == '_') {
             format!(r"^{}$", &query)

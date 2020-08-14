@@ -71,6 +71,8 @@ results_frame.addEventListener("load", () => {
             update_query({"a": elem.className});
         } else if (i === 2) {
             update_query({"q": new URL(elem.href).searchParams.get("q")});
+        } else if (i === 4) {
+            location.href = elem.href;
         }
 
         e.preventDefault();

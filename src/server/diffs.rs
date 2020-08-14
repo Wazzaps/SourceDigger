@@ -106,8 +106,20 @@ pub fn get_diffs(project: String, query: String, actions: String, types: String,
                     components.next().unwrap_or(""),
                 );
 
+                let mut extra_split = extra.split("{name}");
+
+                let (prefix, suffix) = match sym_type.as_ref() {
+                    "Function" => (
+                        extra_split.next().unwrap_or(""),
+                        extra_split.next().unwrap_or("")
+                    ),
+                    "Define" => ("#define ", ""),
+                    "Variable" => ("unknown_t ", ""),
+                    _ => ("", "")
+                };
+
                 tag_output += &format!(
-                    "<div class={0}><a href=# class={6}>{6}</a><a href=# class={0}>{7}</a><a href=\"diffs?q={1}\">{2}<span>{1}</span>{3}</a><hr><a href=\"{8}\">{4}:{5}</a></div>\n",
+                    "<div class={0}><a href=# class={6}>{6}</a><a href=# class={0}>{7}</a><a href=\"diffs?q={1}\"><span>{2}</span><span>{1}</span>{3}</a><hr><a href=\"{8}\">{4}:{5}</a></div>\n",
                     match action.as_ref() {
                         "a" => "a",
                         "r" => "r",
@@ -115,13 +127,8 @@ pub fn get_diffs(project: String, query: String, actions: String, types: String,
                         _ => "u"
                     },
                     &name,
-                    match sym_type.as_ref() {
-                        "Function" => "unk_t ",
-                        "Define" => "#define ",
-                        "Variable" => "unk_t ",
-                        _ => ""
-                    },
-                    extra,
+                    prefix,
+                    suffix,
                     &file,
                     &line,
                     match sym_type.as_ref() {

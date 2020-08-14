@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 rm -rf release
 mkdir release
 
@@ -10,9 +10,10 @@ strip release/sourcedigger-server
 
 echo '--- Copying database'
 mkdir release/sourcedigger-db
-for proj in sourcedigger-db/{vim,git}; do
+for proj in sourcedigger-db/{vim,git,linux}; do
   echo "$proj"
   mkdir release/"$proj"
+  cp "$proj"/config.toml release/"$proj"/
   cp "$proj"/logo.svg release/"$proj"/
   cp "$proj"/autocomplete_db release/"$proj"/
   cp -r "$proj"/diffs release/"$proj"/

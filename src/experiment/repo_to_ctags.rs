@@ -294,6 +294,113 @@ fn get_func_args_at_line(source_code: &str, line_num: Option<u64>) -> String {
     }
 }
 
+struct RetvalState {
+    is_const: bool,
+    type_name: String,
+    ptr_level: usize,
+}
+
+impl RetvalState {
+    fn finalize(&self) -> String {
+        let mut result = String::new();
+        if self.is_const {
+            result += "const ";
+        }
+        if self.type_name.len() != 0 {
+            result += &self.type_name;
+        } else {
+            result += "int";
+        }
+        for _ in 0..self.ptr_level {
+            result += "*";
+        }
+        result
+    }
+
+    fn try_regex(&mut self, pattern: Regex, line: &str) -> bool {
+        if let Some(p1_res) = pattern.captures(&line) {
+            let (is_const, type_prefix, type_name, ptr_level) =
+                (
+                    p1_res.get(1).map(|m| !m.as_str().is_empty()).unwrap_or(false),
+                    p1_res.get(2).unwrap().as_str(),
+                    p1_res.get(3).unwrap().as_str(),
+                    p1_res.get(4).unwrap().as_str().len()
+                );
+            self.is_const = is_const;
+            if type_prefix.len() == 0 {
+                self.type_name = type_name.to_string();
+            } else {
+                self.type_name = format!("{} {}", type_prefix, type_name);
+            }
+            self.ptr_level = ptr_level;
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn feed(&mut self, line: &str) -> Option<String> {
+        // If we stumble on a comment or define, we're done
+        let line_trimmed = line.trim();
+        if line_trimmed.starts_with("#") || line_trimmed.starts_with("/") || line_trimmed.contains("*/") {
+            return Some(self.finalize());
+        }
+
+        let line = line.replace("static", "").replace("inline", "");
+        let pattern1 = Regex::new("\\b(const )?(struct|enum|union) ([a-zA-Z$_][a-zA-Z0-9$_]*)\\b[ \t]*(\\**)").unwrap();
+        let pattern2 = Regex::new("\\b(const )?(signed|unsigned) ([a-zA-Z$_][a-zA-Z0-9$_]*)\\b[ \t]*(\\**)").unwrap();
+        let pattern3 = Regex::new("\\b(const )?()([a-zA-Z$_][a-zA-Z0-9$_]*)\\b[ \t]*(\\**)").unwrap();
+        let found = self.try_regex(pattern1, &line)
+            || self.try_regex(pattern2, &line)
+            || self.try_regex(pattern3, &line);
+        if found {
+            return Some(self.finalize());
+        }
+        None
+    }
+}
+
+fn get_func_ret_at_line(symbol_name: &str, source_code: &str, line_num: Option<u64>) -> String {
+    if let Some(line_num) = line_num {
+
+        const CONTEXT_LINES: usize = 10;
+        let begin_line_num = (line_num as i64 - CONTEXT_LINES as i64).max(0) as usize;
+        let line_count = line_num as usize - begin_line_num;
+        let lines = source_code.lines().skip(begin_line_num).take(line_count).collect::<Vec<_>>();
+        let mut lines = lines.into_iter().rev();
+
+        let first_line = lines.next().unwrap();
+        let first_line_pattern = Regex::new(&format!("(.*)[ \t]*{}[ \t]*\\(", symbol_name)).unwrap();
+        let caps = if let Some(caps) = first_line_pattern.captures(first_line) {
+            caps
+        } else {
+            return "unknown_t".to_string();
+        };
+        let initial_chunk = caps.get(1)
+            .expect(&format!("line with function ({}) didn't have open parenthesis: {}", symbol_name, first_line))
+            .as_str().trim();
+
+        let mut retval = RetvalState { is_const: false, type_name: "".to_string(), ptr_level: 0 };
+        if let Some(result) = retval.feed(initial_chunk) {
+            return result;
+        } else {
+            for line in lines {
+                if let Some(term_idx) = line.rfind('}') {
+                    if let Some(result) = retval.feed(&line[term_idx..]) {
+                        return result;
+                    }
+                    break
+                } else {
+                    if let Some(result) = retval.feed(line) {
+                        return result;
+                    }
+                }
+            }
+        }
+    }
+    "int".to_string()
+}
+
 fn get_var_contents_at_line(source_code: &str, line_num: Option<u64>) -> String {
     if let Some(line_num) = line_num {
         let mut result = String::new();
@@ -329,9 +436,9 @@ fn get_var_contents_at_line(source_code: &str, line_num: Option<u64>) -> String 
     }
 }
 
-fn get_extra_info_at_line(symbol_type: SymbolType, source_code: &str, line_num: Option<u64>) -> String {
+fn get_extra_info_at_line(symbol_type: SymbolType, symbol_name: &str, source_code: &str, line_num: Option<u64>) -> String {
     match symbol_type {
-        SymbolType::Function => get_func_args_at_line(source_code, line_num),
+        SymbolType::Function => get_func_ret_at_line(symbol_name, source_code, line_num) + " {name}" + &get_func_args_at_line(source_code, line_num),
         SymbolType::Variable => get_var_contents_at_line(source_code, line_num),
         // SymbolType::Define => {},
         _ => "".to_string(),
@@ -414,7 +521,7 @@ pub fn repo_to_ctags(
                     symbol.name,
                     symbol.symbol_type,
                     symbol.line_num.unwrap_or(0),
-                    get_extra_info_at_line(symbol.symbol_type, &current_inp_file, symbol.line_num)
+                    get_extra_info_at_line(symbol.symbol_type, &symbol.name, &current_inp_file, symbol.line_num)
                 )
                 .as_bytes(),
             );

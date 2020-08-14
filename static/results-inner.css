@@ -47,16 +47,25 @@ div.m a {
     color: #548080;
 }
 
-div.a a span, div.a > a:nth-of-type(2) {
+div.a a span:nth-of-type(2), div.a > a:nth-of-type(2) {
     color: #afa;
 }
 
-div.r a span, div.r > a:nth-of-type(2) {
+div.r a span:nth-of-type(2), div.r > a:nth-of-type(2) {
     color: #faa;
 }
 
-div.m a span, div.m > a:nth-of-type(2) {
+div.m a span:nth-of-type(2), div.m > a:nth-of-type(2) {
     color: #aff;
+}
+
+div a span:nth-of-type(1) {
+    display: inline-block;
+    width: 130px;
+    padding-right: 8px;
+    text-align: right;
+    overflow: hidden;
+    vertical-align: middle;
 }
 
 div > a:nth-of-type(1) {
