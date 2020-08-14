@@ -4,6 +4,8 @@ Description=SourceDigger Server
 [Service]
 Type=simple
 ExecStart=/srv/sourcedigger/sourcedigger-server
+Restart=on-failure
+RestartSec=1s
 
 [Install]
 WantedBy=multi-user.target

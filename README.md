@@ -2,7 +2,9 @@
 
 This is the source code for the [SourceDigger.io](https://sourcedigger.io) website.
 
-There's plenty of work to do, 
+It lets you index and browse the symbols (functions, variables, defines) of a big C project, and see its history.
+
+There's plenty of work to do, but it's usable
 
 ## Updating index
 ```
@@ -16,8 +18,14 @@ time find sourcedigger-db/vim/tags -type f | xargs cat | cut -f1 | sort | uniq >
 time find sourcedigger-db/git/tags -type f | xargs cat | cut -f1 | sort | uniq > sourcedigger-db/git/autocomplete_db
 ```
 
-## Bundle
+## Bundle and upload
 ```
-./release.sh
-scp release.tar.gz <server>
+local# ./release.sh
+local# scp release.tar.gz <server>:/srv
+local# scp sourcedigger-server.service <server>:/etc/systemd/system
+server:/srv/# tar xzf release.tar.gz
+server:/srv/# mv release sourcedigger
+server:/srv/# systemctl daemon-reload
+server:/srv/# systemctl enable sourcedigger-server
+server:/srv/# systemctl start sourcedigger-server
 ```
