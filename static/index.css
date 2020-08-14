@@ -76,7 +76,7 @@ body {
 }
 
 #footer {
-    margin-top: 8rem;
+    margin-top: 6rem;
     margin-bottom: 2rem;
     color: #8d8d97;
     font-family: 'Roboto Slab', sans-serif;
@@ -113,5 +113,9 @@ body {
     #projects li a span {
         font-size: 1.2rem;
 
+    }
+
+    #footer {
+        margin-top: 3rem;
     }
 }
