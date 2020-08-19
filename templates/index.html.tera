@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SourceDigger</title>
-    <link rel="stylesheet" href="/static/index.css">
-    <link rel="stylesheet" href="/static/common/fonts.css">
+    <style>
+        {%include "index_css"%}
+        {%include "fonts_css"%}
+    </style>
 </head>
 <body>
     <div id="logo">

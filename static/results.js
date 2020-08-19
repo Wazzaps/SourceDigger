@@ -11,7 +11,7 @@ function update_query(changes) {
     let current_url = new URL(location.href);
     let current_params = current_url.searchParams;
     let has_changes = false;
-    for(let c in changes) {
+    for (let c in changes) {
         if (current_params.get(c) !== changes[c]) {
             has_changes = true;
             current_params.set(c, changes[c]);
@@ -45,34 +45,40 @@ addEventListener("popstate", () => {
 })
 
 query_form.addEventListener("submit", (e) => {
-    update_query({"q": query_input.value});
+    update_query({ "q": query_input.value });
     e.preventDefault();
     return false;
 });
 
 results_frame.addEventListener("load", () => {
     results_frame.contentDocument.body.addEventListener("click", (e) => {
-        let parent = e.target.parentNode;
-        let elem = e.target;
-        if (parent.tagName !== "DIV") {
-            elem = parent;
-            parent = parent.parentNode;
-        }
-        let i = 0;
-        for (let child of parent.childNodes) {
-            if (child === elem) {
-                break;
+        if (results_frame.contentDocument.location.href.split("?")[1] == "") {
+            if (e.target.tagName === "A") {
+                location.href = e.target.href;
             }
-            i++;
-        }
-        if (i === 0 && elem.className) {
-            update_query({"t": elem.className});
-        } else if (i === 1 && elem.className) {
-            update_query({"a": elem.className});
-        } else if (i === 2) {
-            update_query({"q": new URL(elem.href).searchParams.get("q")});
-        } else if (i === 4) {
-            location.href = elem.href;
+        } else {
+            let parent = e.target.parentNode;
+            let elem = e.target;
+            if (parent.tagName !== "DIV") {
+                elem = parent;
+                parent = parent.parentNode;
+            }
+            let i = 0;
+            for (let child of parent.childNodes) {
+                if (child === elem) {
+                    break;
+                }
+                i++;
+            }
+            if (i === 0 && elem.className) {
+                update_query({ "t": elem.className });
+            } else if (i === 1 && elem.className) {
+                update_query({ "a": elem.className });
+            } else if (i === 2) {
+                update_query({ "q": new URL(elem.href).searchParams.get("q") });
+            } else {
+                location.href = elem.href;
+            }
         }
 
         e.preventDefault();
@@ -129,7 +135,7 @@ query_input.addEventListener("keyup", () => {
 });
 
 function handle_ac_link(e) {
-    update_query({"q": e.innerText});
+    update_query({ "q": e.innerText });
 }
 
 // query_input.addEventListener("focusin", () => {
