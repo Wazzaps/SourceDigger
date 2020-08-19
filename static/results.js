@@ -52,10 +52,12 @@ query_form.addEventListener("submit", (e) => {
 
 results_frame.addEventListener("load", () => {
     results_frame.contentDocument.body.addEventListener("click", (e) => {
+        if (e.target.tagName !== "A") {
+            return;
+        }
+
         if (results_frame.contentDocument.location.href.split("?")[1] == "") {
-            if (e.target.tagName === "A") {
-                location.href = e.target.href;
-            }
+            location.href = e.target.href;
         } else {
             let parent = e.target.parentNode;
             let elem = e.target;
