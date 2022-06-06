@@ -5,4 +5,4 @@ authors = ["David Shlemayev <davidshlemayev@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-regex = "1.3.9"
+regex = "1.5.5"
