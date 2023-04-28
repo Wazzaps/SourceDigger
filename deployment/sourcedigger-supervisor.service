@@ -1,0 +1,13 @@
+[Unit]
+Description=SourceDigger Supervisor
+
+[Service]
+Type=simple
+ExecStart=/srv/sourcedigger/supervisor.sh
+WorkingDirectory=/srv/sourcedigger
+Restart=on-failure
+RestartSec=1s
+
+[Install]
+WantedBy=multi-user.target
+

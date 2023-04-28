@@ -1,0 +1,42 @@
+[Unit]
+Description=SourceDigger Server
+
+[Service]
+Type=simple
+ExecStart=/srv/sourcedigger/sourcedigger-server
+WorkingDirectory=/srv/sourcedigger
+Restart=on-failure
+RestartSec=1s
+Environment=PATH=/srv/sourcedigger
+
+DynamicUser=yes
+LockPersonality=true
+MemoryDenyWriteExecute=true
+NoExecPaths=/
+ExecPaths=/srv/sourcedigger/sourcedigger-server /srv/sourcedigger/rg /srv/sourcedigger/timeout
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+PrivateUsers=true
+ProcSubset=pid
+ProtectClock=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectHostname=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectProc=invisible
+ProtectSystem=strict
+ReadOnlyPaths=/srv/sourcedigger
+RemoveIPC=true
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SecureBits=
+SystemCallArchitectures=native
+SystemCallFilter=~@debug @module @mount @reboot @raw-io @privileged
+
+[Install]
+WantedBy=multi-user.target

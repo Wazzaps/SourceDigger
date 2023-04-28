@@ -1,0 +1,5 @@
+[target.aarch64-unknown-linux-gnu]
+linker = "aarch64-linux-gnu-gcc-12"
+
+[target.aarch64-unknown-linux-musl]
+linker = "/opt/aarch64--musl--stable-2022.08-2/bin/aarch64-buildroot-linux-musl-gcc"

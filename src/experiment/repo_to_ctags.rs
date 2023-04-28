@@ -515,7 +515,7 @@ pub fn repo_to_ctags(
             }
         }
         if !is_file_skipped {
-            &current_out_file.as_mut().unwrap().write_all(
+            current_out_file.as_mut().unwrap().write_all(
                 format!(
                     "{}\t{:?}\t{}\t{}\n",
                     symbol.name,
@@ -523,8 +523,8 @@ pub fn repo_to_ctags(
                     symbol.line_num.unwrap_or(0),
                     get_extra_info_at_line(symbol.symbol_type, &symbol.name, &current_inp_file, symbol.line_num)
                 )
-                .as_bytes(),
-            );
+                    .as_bytes(),
+            ).unwrap();
             sym_counter += 1;
         }
     }

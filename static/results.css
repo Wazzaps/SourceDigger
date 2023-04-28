@@ -74,24 +74,20 @@ body {
     pointer-events: none;
 }
 
-#query-container {
-    width: 60vw;
-    max-width: 620px;
-    margin: 0 auto;
-    display: flex;
-    pointer-events: all;
-}
-
 #query {
     background: #3e3e4c;
     border: none;
     color: #c7c7d7;
     font-size: 1.5rem;
     border-radius: 4px;
-    line-height: 2.4rem;
-    width: 100%;
-    padding: 0.1rem 0.6rem;
     font-family: 'Ubuntu Mono', sans-serif;
+    line-height: 2.4rem;
+    margin: auto;
+    display: block;
+    width: 60vw;
+    max-width: 600px;
+    padding: 0.1rem 0.6rem;
+    pointer-events: all;
 }
 
 #query:focus {
@@ -111,15 +107,11 @@ body {
     background: #222229;
 }
 
-#shows-autocomplete {
-    flex-grow: 1;
-}
-
-#shows-autocomplete #autocomplete {
+#query-form #autocomplete {
     display: none;
 }
 
-#shows-autocomplete:focus-within #autocomplete {
+#query-form:focus-within #autocomplete {
     display: block !important;
 }
 
@@ -142,7 +134,7 @@ body {
     background: #1e1e24;
     width: 80%;
     max-width: 600px;
-    height: 70vh;
+    max-height: 80vh;
     overflow-y: auto;
     overflow-x: hidden;
     color: #c7c7d7;
@@ -163,71 +155,35 @@ body {
     text-decoration: none;
 }
 
-#toggles {
-    display: flex;
-    flex-direction: column;
-    /*text-transform: uppercase;*/
-    font-family: sans-serif;
-    flex-wrap: wrap;
-    height: 2.4rem;
-    align-self: center;
-    justify-content: space-between;
-    margin-left: 1.5rem;
-}
-
-#toggles label {
-    user-select: none;
-}
-
-#toggles label span {
-    color: #898e93;
-    background: transparent;
-    display: block;
-    line-height: 0.81rem;
-    padding: 0.025rem 6px;
-    /*margin: 0.05rem 0.15rem;*/
-    border-radius: 0.2rem;
-    font-size: 12px;
-}
-
-#toggles input {
-    display: none;
-}
-
-#toggles :checked + span {
-    color: white;
-    background: #3e3e4c;
-}
-
 @media only screen and (max-width: 760px) {
     #query {
         margin: 0;
         margin-left: auto;
         margin-right: 5px;
     }
-/*    #logo {*/
-/*        margin-top: 2rem;*/
-/*        font-size: 1.6rem;*/
-/*        line-height: 3rem;*/
-/*    }*/
+    /*    #logo {*/
+    /*        margin-top: 2rem;*/
+    /*        font-size: 1.6rem;*/
+    /*        line-height: 3rem;*/
+    /*    }*/
 
-/*    #logo-icon {*/
-/*        height: 2rem;*/
-/*    }*/
+    /*    #logo-icon {*/
+    /*        height: 2rem;*/
+    /*    }*/
 
-/*    .gap {*/
-/*        width: 0.8rem;*/
-/*    }*/
+    /*    .gap {*/
+    /*        width: 0.8rem;*/
+    /*    }*/
 
-/*    #projects li a div {*/
-/*        padding: 1.5rem;*/
-/*        width: 3.5rem;*/
-/*        height: 3rem;*/
-/*        background-size: 70%;*/
-/*    }*/
+    /*    #projects li a div {*/
+    /*        padding: 1.5rem;*/
+    /*        width: 3.5rem;*/
+    /*        height: 3rem;*/
+    /*        background-size: 70%;*/
+    /*    }*/
 
-/*    #projects li a span {*/
-/*        font-size: 1.2rem;*/
+    /*    #projects li a span {*/
+    /*        font-size: 1.2rem;*/
 
-/*    }*/
+    /*    }*/
 }
